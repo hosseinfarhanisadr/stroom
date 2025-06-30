@@ -11,16 +11,16 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
-    "@repo/ui": "workspace:*",
+    "@stroom/ui": "workspace:*",
     "next": "^15.3.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
+    "@stroom/eslint-config": "workspace:*",
+    "@stroom/typescript-config": "workspace:*",
     "@tailwindcss/postcss": "^4.1.11",
-    "@types/node": "^22.15.3",
+    "@types/node": "^24",
     "@types/react": "19.1.0",
     "@types/react-dom": "19.1.1",
     "eslint": "^9.29.0",
