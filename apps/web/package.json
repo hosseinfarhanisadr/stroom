@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@stroom/ui": "workspace:*",
+    "better-auth": "^1.2.12",
     "dotenv": "^17.0.1",
     "drizzle-orm": "^0.44.2",
     "next": "^15.3.0",
