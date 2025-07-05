@@ -3,7 +3,10 @@ import * as React from "react";
 import { cn } from "@stroom/ui/lib/utils";
 import { Input as BaseUIInput } from "@base-ui-components/react/input";
 
-function Input({ className, ...props }: React.ComponentProps<"input">) {
+function Input({
+  className,
+  ...props
+}: React.ComponentProps<typeof BaseUIInput>): React.ReactElement {
   return (
     <BaseUIInput
       data-slot="input"
