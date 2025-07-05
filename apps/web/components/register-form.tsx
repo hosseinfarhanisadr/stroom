@@ -75,7 +75,6 @@ export function RegisterForm({
                 </div>
                 <Input id="password" name="password" type="password" required />
               </div>
-
               <div className="flex flex-col gap-3">
                 <Button type="submit" className="w-full">
                   Register
