@@ -1,3 +1,4 @@
+"use client";
 import { cn } from "@stroom/ui/lib/utils";
 import {
   Card,
@@ -7,14 +8,25 @@ import {
   CardTitle,
 } from "@stroom/ui/components/card";
 import { Input } from "@stroom/ui/components/input";
-import { Label } from "@stroom/ui/components/label";
 import { Button } from "@stroom/ui/components/button";
 import Link from "next/link";
+import { Form } from "@stroom/ui/components/form";
+import { Field, Label, Error } from "@stroom/ui/components/field";
+import { FormEvent, useState } from "react";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const [errors, setErrors] = useState({});
+  const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    console.log("form data:", email, password);
+  };
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -25,18 +37,24 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <Form
+            errors={errors}
+            onClearErrors={setErrors}
+            onSubmit={handleLogin}
+          >
             <div className="flex flex-col gap-6">
-              <div className="grid gap-3">
+              <Field>
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   type="email"
+                  name="email"
                   placeholder="m@example.com"
                   required
                 />
-              </div>
-              <div className="grid gap-3">
+                <Error />
+              </Field>
+              <Field>
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
                   <a
@@ -46,8 +64,9 @@ export function LoginForm({
                     Forgot your password?
                   </a>
                 </div>
-                <Input id="password" type="password" required />
-              </div>
+                <Input id="password" name="password" type="password" required />
+                <Error />
+              </Field>
               <div className="flex flex-col gap-3">
                 <Button type="submit" className="w-full">
                   Login
@@ -63,7 +82,7 @@ export function LoginForm({
                 Register now
               </Link>
             </div>
-          </form>
+          </Form>
         </CardContent>
       </Card>
     </div>
