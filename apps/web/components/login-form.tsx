@@ -17,6 +17,7 @@ import { FormEvent, useState } from "react";
 import { z } from "zod";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 type LoginFormErrors = {
   email?: string[];
@@ -35,8 +36,10 @@ export function LoginForm({
 }: React.ComponentProps<"div">) {
   const router = useRouter();
   const [errors, setErrors] = useState<LoginFormErrors>({});
+  const [isLoading, setIsLoading] = useState(false);
   const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setIsLoading(true);
     const formData = new FormData(event.currentTarget);
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
@@ -59,11 +62,12 @@ export function LoginForm({
         callbackURL: "/",
       },
       {
-        onRequest: () => {},
         onSuccess: () => {
           router.push("/");
+          setIsLoading(false);
         },
         onError: (ctx) => {
+          setIsLoading(false);
           setErrors({ message: ctx.error?.message });
         },
       },
@@ -109,8 +113,21 @@ export function LoginForm({
                 <p className="text-sm text-red-800">{errors?.message}</p>
               )}
               <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full">
-                  Login
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? (
+                    <div className="flex items-center gap-3">
+                      <Image
+                        src="/spinner.svg"
+                        alt=""
+                        width={20}
+                        height={20}
+                        aria-hidden="true"
+                      />
+                      <span>Processing...</span>
+                    </div>
+                  ) : (
+                    "Login"
+                  )}
                 </Button>
                 <Button variant="outline" className="w-full">
                   Login with Google
