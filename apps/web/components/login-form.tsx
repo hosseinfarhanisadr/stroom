@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { cn } from "@stroom/ui/lib/utils";
 import {
@@ -13,6 +14,12 @@ import Link from "next/link";
 import { Form } from "@stroom/ui/components/form";
 import { Field, Label, Error } from "@stroom/ui/components/field";
 import { FormEvent, useState } from "react";
+import { z } from "zod";
+
+const loginFormSchema = z.object({
+  email: z.string().email("Email is not valid!"),
+  password: z.string().min(8, "Password is not correct!"),
+});
 
 export function LoginForm({
   className,
@@ -24,6 +31,17 @@ export function LoginForm({
     const formData = new FormData(event.currentTarget);
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
+    const result = loginFormSchema.safeParse(
+      Object.fromEntries(formData as any),
+    );
+
+    if (!result.success) {
+      const fieldErrors = result.error.flatten().fieldErrors;
+      setErrors(fieldErrors);
+      return;
+    }
+
+    setErrors({});
 
     console.log("form data:", email, password);
   };
@@ -43,18 +61,12 @@ export function LoginForm({
             onSubmit={handleLogin}
           >
             <div className="flex flex-col gap-6">
-              <Field>
+              <Field name="email">
                 <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  name="email"
-                  placeholder="m@example.com"
-                  required
-                />
+                <Input type="email" placeholder="m@example.com" required />
                 <Error />
               </Field>
-              <Field>
+              <Field name="password">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
                   <a
@@ -64,7 +76,7 @@ export function LoginForm({
                     Forgot your password?
                   </a>
                 </div>
-                <Input id="password" name="password" type="password" required />
+                <Input type="password" required />
                 <Error />
               </Field>
               <div className="flex flex-col gap-3">
