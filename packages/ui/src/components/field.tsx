@@ -18,7 +18,11 @@ function Field({ className, ...props }: FieldPrimitivesRootProps) {
 function Label({ className, ...props }: FieldPrimitivesLabelProps) {
   return (
     <FieldPrimitives.Label
-      className={cn("data-[error=true]:text-destructive", className)}
+      className={cn(
+        "data-[invalid]:text-red-400",
+        "flex select-none items-center gap-2 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50 group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50",
+        className,
+      )}
       {...props}
     />
   );
