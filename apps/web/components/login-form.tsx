@@ -15,6 +15,14 @@ import { Form } from "@stroom/ui/components/form";
 import { Field, Label, Error } from "@stroom/ui/components/field";
 import { FormEvent, useState } from "react";
 import { z } from "zod";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+
+type LoginFormErrors = {
+  email?: string[];
+  password?: string[];
+  message?: string;
+};
 
 const loginFormSchema = z.object({
   email: z.string().email("Email is not valid!"),
@@ -25,7 +33,8 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const [errors, setErrors] = useState({});
+  const router = useRouter();
+  const [errors, setErrors] = useState<LoginFormErrors>({});
   const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
@@ -43,7 +52,24 @@ export function LoginForm({
 
     setErrors({});
 
-    console.log("form data:", email, password);
+    const { data, error } = await authClient.signIn.email(
+      {
+        email,
+        password,
+        callbackURL: "/",
+      },
+      {
+        onRequest: () => {},
+        onSuccess: () => {
+          router.push("/");
+        },
+        onError: (ctx) => {
+          setErrors({ message: ctx.error?.message });
+        },
+      },
+    );
+
+    console.log("Login user:", { data, error });
   };
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -79,6 +105,9 @@ export function LoginForm({
                 <Input type="password" required />
                 <Error />
               </Field>
+              {errors?.message && (
+                <p className="text-sm text-red-800">{errors?.message}</p>
+              )}
               <div className="flex flex-col gap-3">
                 <Button type="submit" className="w-full">
                   Login
