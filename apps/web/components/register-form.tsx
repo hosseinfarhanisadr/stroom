@@ -50,7 +50,6 @@ export function RegisterForm({
     );
 
     if (!result.success) {
-      console.log(result.error.flatten().fieldErrors);
       setErrors({ ...result.error.flatten().fieldErrors });
     }
 
@@ -76,7 +75,6 @@ export function RegisterForm({
     );
     console.log("Registering user:", { name, email, password, data, error });
   };
-  console.log(errors);
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -91,31 +89,25 @@ export function RegisterForm({
             onSubmit={handleRegister}
           >
             <div className="flex flex-col gap-6">
-              <Field>
+              <Field name="name">
                 <Label htmlFor="name">Name</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  placeholder="Enter your name"
-                  required
-                />
-                <Error className="text-sm text-red-800" />
+                <Input id="name" placeholder="Enter your name" required />
+                <Error />
               </Field>
-              <Field className="grid gap-3">
+              <Field name="email">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
-                  name="email"
                   type="email"
                   placeholder="m@example.com"
                   required
                 />
-                <Error className="text-sm text-red-800" />
+                <Error />
               </Field>
-              <Field className="grid gap-3">
+              <Field name="password">
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" name="password" type="password" required />
-                <Error className="text-sm text-red-800" />
+                <Input id="password" type="password" required />
+                <Error />
               </Field>
               {errors?.message && (
                 <p className="text-sm text-red-800">{errors?.message}</p>
