@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { cn } from "@stroom/ui/lib/utils";
 import {
@@ -17,7 +16,7 @@ import { FormEvent, useState } from "react";
 import { z } from "zod";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
+import { Loader2Icon } from "lucide-react";
 
 type LoginFormErrors = {
   email?: string[];
@@ -44,7 +43,7 @@ export function LoginForm({
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
     const result = loginFormSchema.safeParse(
-      Object.fromEntries(formData as any),
+      Object.fromEntries(formData as FormData),
     );
 
     if (!result.success) {
@@ -59,7 +58,6 @@ export function LoginForm({
       {
         email,
         password,
-        callbackURL: "/",
       },
       {
         onSuccess: () => {
@@ -92,13 +90,18 @@ export function LoginForm({
           >
             <div className="flex flex-col gap-6">
               <Field name="email">
-                <Label htmlFor="email">Email</Label>
-                <Input type="email" placeholder="m@example.com" required />
+                <Label>Email</Label>
+                <Input
+                  type="email"
+                  placeholder="m@example.com"
+                  autoComplete="on"
+                  required
+                />
                 <Error />
               </Field>
               <Field name="password">
                 <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
+                  <Label>Password</Label>
                   <a
                     href="#"
                     className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
@@ -106,7 +109,7 @@ export function LoginForm({
                     Forgot your password?
                   </a>
                 </div>
-                <Input type="password" required />
+                <Input type="password" autoComplete="on" required />
                 <Error />
               </Field>
               {errors?.message && (
@@ -116,14 +119,8 @@ export function LoginForm({
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? (
                     <div className="flex items-center gap-3">
-                      <Image
-                        src="/spinner.svg"
-                        alt=""
-                        width={20}
-                        height={20}
-                        aria-hidden="true"
-                      />
-                      <span>Processing...</span>
+                      <Loader2Icon className="animate-spin" />
+                      <span>Please wait...</span>
                     </div>
                   ) : (
                     "Login"

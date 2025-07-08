@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@stroom/ui/components/button";
 import {
@@ -12,7 +11,7 @@ import { Error, Label, Field } from "@stroom/ui/components/field";
 import { Form } from "@stroom/ui/components/form";
 import { Input } from "@stroom/ui/components/input";
 import { cn } from "@stroom/ui/lib/utils";
-import Image from "next/image";
+import { Loader2Icon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -21,11 +20,13 @@ import { z } from "zod";
 const registerSchema = z.object({
   name: z.string().min(1),
   email: z.string().email(),
-  password: z.string().min(8),
+  password: z.string().min(8, "Password is too short!"),
 });
 
-type RegisterSchemaType = z.infer<typeof registerSchema>;
-type RegisterErrors = Partial<Record<keyof RegisterSchemaType, string[]>> & {
+type RegisterErrors = {
+  name?: string[];
+  email?: string[];
+  password?: string[];
   message?: string;
 };
 
@@ -39,19 +40,21 @@ export function RegisterForm({
 
   const handleRegister = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     const formData = new FormData(event.currentTarget);
     const name = formData.get("name") as string;
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
-
     const result = registerSchema.safeParse(
-      Object.fromEntries(formData as any),
+      Object.fromEntries(formData as FormData),
     );
 
     if (!result.success) {
-      setErrors({ ...result.error.flatten().fieldErrors });
+      const fieldErrors = result.error.flatten().fieldErrors;
+      setErrors(fieldErrors);
+      return;
     }
+
+    setErrors({});
 
     const { data, error } = await authClient.signUp.email(
       {
@@ -90,23 +93,27 @@ export function RegisterForm({
           >
             <div className="flex flex-col gap-6">
               <Field name="name">
-                <Label htmlFor="name">Name</Label>
-                <Input id="name" placeholder="Enter your name" required />
+                <Label>Name</Label>
+                <Input
+                  placeholder="Enter your name"
+                  required
+                  autoComplete="on"
+                />
                 <Error />
               </Field>
               <Field name="email">
-                <Label htmlFor="email">Email</Label>
+                <Label>Email</Label>
                 <Input
-                  id="email"
                   type="email"
                   placeholder="m@example.com"
                   required
+                  autoComplete="on"
                 />
                 <Error />
               </Field>
               <Field name="password">
-                <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" required />
+                <Label>Password</Label>
+                <Input type="password" required autoComplete="on" />
                 <Error />
               </Field>
               {errors?.message && (
@@ -116,14 +123,8 @@ export function RegisterForm({
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? (
                     <div className="flex items-center gap-3">
-                      <Image
-                        src="/spinner.svg"
-                        alt=""
-                        width={20}
-                        height={20}
-                        aria-hidden="true"
-                      />
-                      <span>Processing...</span>
+                      <Loader2Icon className="animate-spin" />
+                      <span>Please wait...</span>
                     </div>
                   ) : (
                     "Register"
