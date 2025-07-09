@@ -11,10 +11,7 @@ type FieldPrimitivesErrorProps = ComponentProps<typeof FieldPrimitives.Error>;
 
 function Field({ className, ...props }: FieldPrimitivesRootProps) {
   return (
-    <FieldPrimitives.Root
-      className={cn("group grid gap-2", className)}
-      {...props}
-    />
+    <FieldPrimitives.Root className={cn("grid gap-2", className)} {...props} />
   );
 }
 
@@ -23,7 +20,7 @@ function Label({ className, ...props }: FieldPrimitivesLabelProps) {
     <FieldPrimitives.Label
       className={cn(
         "data-[invalid]:text-red-400",
-        "flex select-none items-center gap-2 text-sm font-medium leading-none group-disabled:cursor-not-allowed group-disabled:opacity-50 group-data-[disabled]:pointer-events-none group-data-[disabled]:opacity-50",
+        "flex select-none items-center gap-2 text-sm font-medium leading-none data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
         className,
       )}
       {...props}
