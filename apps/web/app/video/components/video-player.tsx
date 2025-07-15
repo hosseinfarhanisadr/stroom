@@ -15,6 +15,7 @@ import {
 } from "media-chrome/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import hls from "hls.js";
 
 type VideoPlayer = {
   source: string;
@@ -25,6 +26,7 @@ function VideoPlayer({ source, title }: VideoPlayer) {
   const router = useRouter();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [showHeader, setShowHeader] = useState(true);
+  const [videoSrc] = useState(source);
 
   useEffect(() => {
     const videoElement = videoRef.current;
@@ -52,8 +54,25 @@ function VideoPlayer({ source, title }: VideoPlayer) {
       window.removeEventListener("mousemove", toggleHeader);
     };
   }, []);
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+
+    if (hls.isSupported() && videoSrc.endsWith(".m3u8")) {
+      const hlsInstance = new hls();
+      hlsInstance.loadSource(videoSrc);
+      hlsInstance.attachMedia(videoRef.current);
+
+      return () => {
+        hlsInstance.destroy();
+      };
+    } else {
+      videoRef.current.src = videoSrc;
+    }
+  }, [videoSrc]);
+
   return (
-    <div className="relative">
+    <div className="relative h-screen w-screen overflow-hidden">
       <div
         className={`absolute left-0 top-0 z-10 flex w-full items-center justify-between p-10 transition-opacity duration-500 ${
           showHeader ? "opacity-100" : "opacity-0"
@@ -74,8 +93,7 @@ function VideoPlayer({ source, title }: VideoPlayer) {
           ref={videoRef}
           suppressHydrationWarning={true}
           slot="media"
-          src={source}
-          className="relative h-screen w-screen overflow-hidden bg-black"
+          className="relative h-screen w-screen bg-black object-cover"
           preload="auto"
           muted
           crossOrigin=""
