@@ -3,7 +3,7 @@ import VideoPlayer from "../components/video-player";
 function page() {
   return (
     <div>
-      <VideoPlayer source="/video.mp4" title="Mad Max" />
+      <VideoPlayer source="https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" />
     </div>
   );
 }

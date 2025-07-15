@@ -13,20 +13,28 @@ import {
   MediaFullscreenButton,
   MediaMuteButton,
 } from "media-chrome/react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import hls from "hls.js";
 
 type VideoPlayer = {
   source: string;
-  title: string;
 };
 
-function VideoPlayer({ source, title }: VideoPlayer) {
+function VideoPlayer({ source }: VideoPlayer) {
   const router = useRouter();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [showHeader, setShowHeader] = useState(true);
   const [videoSrc] = useState(source);
+  const { slug } = useParams();
+
+  const title = slug
+    ? Array.isArray(slug)
+      ? (slug[0]?.replace("-", " ") ?? "Video Title")
+      : slug.replace("-", " ") || "Video Title"
+    : "Video Title";
+
+  console.log(54, slug);
 
   useEffect(() => {
     const videoElement = videoRef.current;
@@ -85,7 +93,7 @@ function VideoPlayer({ source, title }: VideoPlayer) {
             strokeWidth={3}
           />
         </p>
-        <p className="text-2xl font-bold text-gray-300">{title}</p>
+        <p className="text-2xl font-bold capitalize text-gray-300">{title}</p>
       </div>
 
       <MediaController style={{ display: "flex", position: "relative" }}>
