@@ -4,7 +4,6 @@ import {
   MediaController,
   MediaControlBar,
   MediaTimeRange,
-  MediaTimeDisplay,
   MediaVolumeRange,
   MediaPlayButton,
   MediaSeekBackwardButton,
@@ -16,25 +15,21 @@ import {
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import hls from "hls.js";
+import { Button } from "@stroom/ui/components/button";
+import { cn } from "@stroom/ui/lib/utils";
 
-type VideoPlayer = {
+type VideoPlayerProps = {
   source: string;
+  backUrl: string;
 };
 
-function VideoPlayer({ source }: VideoPlayer) {
+function VideoPlayer({ source, backUrl }: VideoPlayerProps) {
   const router = useRouter();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [showHeader, setShowHeader] = useState(true);
   const [videoSrc] = useState(source);
-  const { slug } = useParams();
-
-  const title = slug
-    ? Array.isArray(slug)
-      ? (slug[0]?.replace("-", " ") ?? "Video Title")
-      : slug.replace("-", " ") || "Video Title"
-    : "Video Title";
-
-  console.log(54, slug);
+  const { slug } = useParams<{ slug: string }>();
+  const title = slug.replace("-", " ") || "Video Title";
 
   useEffect(() => {
     const videoElement = videoRef.current;
@@ -82,55 +77,58 @@ function VideoPlayer({ source }: VideoPlayer) {
   return (
     <div className="relative h-screen w-screen overflow-hidden">
       <div
-        className={`absolute left-0 top-0 z-10 flex w-full items-center justify-between p-10 transition-opacity duration-500 ${
-          showHeader ? "opacity-100" : "opacity-0"
-        } bg-gradient-to-b from-black/70 to-transparent`}
+        className={cn(
+          "absolute left-0 top-0 z-10 flex w-full items-center justify-between p-10 transition-opacity duration-500",
+          showHeader ? "opacity-100" : "opacity-0",
+          "bg-gradient-to-b from-black/70 to-transparent",
+        )}
       >
-        <p className="cursor-pointer" onClick={() => router.back()}>
-          <ArrowLeft
-            size={40}
-            color="oklch(87.2% 0.01 258.338)"
-            strokeWidth={3}
-          />
-        </p>
-        <p className="text-2xl font-bold capitalize text-gray-300">{title}</p>
+        <Button
+          variant={"ghost"}
+          className="cursor-pointer hover:bg-transparent"
+          onClick={() => router.push(backUrl)}
+        >
+          <ArrowLeft className="size-10 text-gray-100" strokeWidth={3} />
+        </Button>
+        <h1 className="text-2xl font-bold capitalize text-gray-100">{title}</h1>
       </div>
 
-      <MediaController style={{ display: "flex", position: "relative" }}>
+      <MediaController className="relative flex">
         <video
           ref={videoRef}
           suppressHydrationWarning={true}
           slot="media"
           className="relative h-screen w-screen bg-black object-cover"
           preload="auto"
-          muted
-          crossOrigin=""
+          autoPlay={true}
         />
-        <MediaControlBar>
-          <MediaPlayButton
-            style={{ paddingLeft: "8px", paddingRight: "4px" }}
-          />
-          <MediaSeekBackwardButton
-            style={{ paddingLeft: "4px", paddingRight: "4px" }}
-            seekOffset={10}
-          />
-          <MediaSeekForwardButton
-            style={{ paddingLeft: "4px", paddingRight: "4px" }}
-            seekOffset={10}
-          />
-          <MediaTimeRange />
-          <MediaTimeDisplay showDuration mediaDuration={134} />
-          <MediaMuteButton
-            mediaVolumeLevel="off"
-            style={{ paddingLeft: "4px", paddingRight: "4px" }}
-          />
-          <MediaVolumeRange
-            style={{ paddingLeft: "4px", paddingRight: "4px" }}
-          />
-          <MediaPlaybackRateButton rates={[0.5, 1, 2]} />
-          <MediaFullscreenButton
-            style={{ paddingLeft: "4px", paddingRight: "4px" }}
-          />
+        <MediaControlBar className="grid">
+          <MediaTimeRange className="left-0 top-0 h-1 w-full" />
+          <div className="flex w-full items-center justify-between bg-black/70">
+            <div className="flex">
+              <MediaPlayButton className="size-20 bg-transparent transition-transform hover:scale-[1.3]" />
+              <MediaSeekBackwardButton
+                className="size-20 bg-transparent transition-transform hover:scale-[1.3]"
+                seekOffset={10}
+              />
+              <MediaSeekForwardButton
+                className="size-20 bg-transparent transition-transform hover:scale-[1.3]"
+                seekOffset={10}
+              />
+            </div>
+            <div>
+              <MediaMuteButton
+                mediaVolumeLevel="off"
+                className="size-20 bg-transparent transition-transform hover:scale-[1.3]"
+              />
+              <MediaVolumeRange className="bg-transparent" />
+              <MediaPlaybackRateButton
+                className="bg-transparent pl-5 text-xl transition-transform hover:scale-[1.3]"
+                rates={[0.5, 1, 2]}
+              />
+              <MediaFullscreenButton className="size-20 bg-transparent transition-transform hover:scale-[1.3]" />
+            </div>
+          </div>
         </MediaControlBar>
       </MediaController>
     </div>
