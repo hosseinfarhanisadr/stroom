@@ -27,7 +27,6 @@ function VideoPlayer({ source, backUrl }: VideoPlayerProps) {
   const router = useRouter();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [showHeader, setShowHeader] = useState(true);
-  const [videoSrc] = useState(source);
   const { slug } = useParams<{ slug: string }>();
   const title = slug.replace("-", " ") || "Video Title";
 
@@ -61,18 +60,18 @@ function VideoPlayer({ source, backUrl }: VideoPlayerProps) {
   useEffect(() => {
     if (!videoRef.current) return;
 
-    if (hls.isSupported() && videoSrc.endsWith(".m3u8")) {
+    if (hls.isSupported() && source.endsWith(".m3u8")) {
       const hlsInstance = new hls();
-      hlsInstance.loadSource(videoSrc);
+      hlsInstance.loadSource(source);
       hlsInstance.attachMedia(videoRef.current);
 
       return () => {
         hlsInstance.destroy();
       };
     } else {
-      videoRef.current.src = videoSrc;
+      videoRef.current.src = source;
     }
-  }, [videoSrc]);
+  }, [source]);
 
   return (
     <div className="relative h-screen w-screen overflow-hidden">
